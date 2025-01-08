@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cactus Paradise</title>
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 1.2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #16a085;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                url('./images/hero-bg.jpg');
+            height: 80vh;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+        }
+
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease 0.3s;
+            animation-fill-mode: both;
+        }
+
+        /* Products Grid */
+        .products {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .product-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .product-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            color: #2c3e50;
+        }
+
+        .product-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        button {
+            background-color: #16a085;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #138a72;
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .hero {
+                height: 60vh;
+                margin-top: 0;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+                padding: 0 1rem;
+            }
+
+            .products {
+                padding: 0 1rem;
+            }
+        }
+
+        /* Care Guide Section */
+        .care-guide {
+            background-color: #f8f9fa;
+            padding: 5rem 2rem;
+        }
+
+        .care-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .care-guide h2 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .care-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .care-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .care-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .care-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .care-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .care-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Responsive adjustments for care guide */
+        @media (max-width: 768px) {
+            .care-guide {
+                padding: 3rem 1rem;
+            }
+            
+            .care-guide h2 {
+                font-size: 2rem;
+            }
+            
+            .care-grid {
+                gap: 1.5rem;
+            }
+        }
+
+        /* Add this to your CSS styles */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            background-color: #16a085;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: -0.5rem;
+        }
+
+        .logo:hover {
+            background-color: #138a72;
+            transform: rotate(360deg);
+            color: #000;
+        }
+
+        /* Update your existing nav styles */
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+        }
+
+        /* Add this to your mobile responsive section */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 5rem 2rem;
+            background-color: white;
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact h2 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .contact-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .contact-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .contact-form h3 {
+            font-family: 'Playfair Display', serif;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #16a085;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .contact {
+                padding: 3rem 1rem;
+            }
+
+            .contact h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Map Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 2;
+        }
+
+        .close-btn:hover {
+            color: #16a085;
+        }
+
+        .contact-card {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #16a085;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-card:hover .click-hint {
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            #map {
+                height: 300px;
+            }
+        }
+
+        /* Thank You Section */
+        .thank-you {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .thank-you-container {
+            max-width: 600px;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .thank-you h1 {
+            color: #16a085;
+            margin-bottom: 20px;
+        }
+
+        .thank-you p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #16a085;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .back-button:hover {
+            background-color: #138a72;
+            transform: scale(1.05);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">JK</a>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#care">Care Guide</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Welcome to Cactus Paradise</h1>
+            <p>Discover our carefully curated collection of exotic cacti and succulents, perfect for bringing desert beauty into your home</p>
+        </div>
+    </section>
+
+    <section class="products" id="products">
+        <div class="product-card">
+            <img src="./images/cactus1.jpg" alt="Desert Beauty">
+            <h3>Desert Beauty</h3>
+            <p>A stunning specimen that brings the essence of the desert to your living space. Low maintenance and long-lasting beauty.</p>
+            <button>Learn More</button>
+        </div>
+        <div class="product-card">
+            <img src="./images/cactus2.jpg" alt="Spiky Wonder">
+            <h3>Spiky Wonder</h3>
+            <p>This architectural beauty adds a modern touch to any room. Perfect for both beginners and experienced plant lovers.</p>
+            <button>Learn More</button>
+        </div>
+        <div class="product-card">
+            <img src="./images/cactus3.jpg" alt="Succulent Dream">
+            <h3>Succulent Dream</h3>
+            <p>Our most popular variety, known for its unique shape and gorgeous coloring. Thrives in bright, indirect light.</p>
+            <button>Learn More</button>
+        </div>
+        <div class="product-card">
+            <img src="./images/cactus4.jpg" alt="Desert Star">
+            <h3>Golden Barrel</h3>
+            <p>A rare star-shaped cactus that's sure to be a conversation starter. Perfect for bright windowsills.</p>
+            <button>Learn More</button>
+        </div>
+        <div class="product-card">
+            <img src="./images/cactus5.jpg" alt="Golden Barrel">
+            <h3>Dessert Star</h3>
+            <p>This round beauty is known for its striking silhouette and golden spines. A desert collector's favorite.</p>
+            <button>Learn More</button>
+        </div>
+        <div class="product-card">
+            <img src="./images/pinkCrown.jpg" alt="Pink Crown">
+            <h3>Pink Crown</h3>
+            <p>Features beautiful pink flowers when in bloom. Easy to care for and perfect for beginners.</p>
+            <button>Learn More</button>
+        </div>
+    </section>
+
+    <section class="care-guide" id="care">
+        <div class="care-container">
+            <h2>Cactus Care Guide</h2>
+            <div class="care-grid">
+                <div class="care-card">
+                    <div class="care-icon">💧</div>
+                    <h3>Watering</h3>
+                    <p>Water thoroughly when soil is completely dry. Reduce watering in winter. Always better to underwater than overwater.</p>
+                </div>
+                <div class="care-card">
+                    <div class="care-icon">☀️</div>
+                    <h3>Light</h3>
+                    <p>Place in bright, indirect sunlight. Most cacti can handle full sun but introduce gradually to prevent burning.</p>
+                </div>
+                <div class="care-card">
+                    <div class="care-icon">🌡️</div>
+                    <h3>Temperature</h3>
+                    <p>Prefer warm conditions between 70-80°F (21-27°C). Protect from frost and cold drafts in winter.</p>
+                </div>
+                <div class="care-card">
+                    <div class="care-icon">🌱</div>
+                    <h3>Soil</h3>
+                    <p>Use well-draining cactus soil mix. Add perlite or sand to improve drainage if needed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="contact-container">
+            <h2>Get in Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-card" onclick="openMap()">
+                        <div class="contact-icon">📍</div>
+                        <h3>Visit Us</h3>
+                        <p>Av San Martin calle Dr Alejandro Ramirez<br>Santa Cruz, Bolivia</p>
+                        <small class="click-hint">Click to view map</small>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">📞</div>
+                        <h3>Call Us</h3>
+                        <p>+591 69231440<br>Mon-Fri: 9am - 6pm</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">✉️</div>
+                        <h3>Email Us</h3>
+                        <p>info@cactusparadise03@gmail.com<br>support@cactusparadise03@gmail.com</p>
+                    </div>
+                </div>
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <h3>Send us a Message</h3>
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add this div for the map modal -->
+    <div id="mapModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <section id="thank-you" class="thank-you" style="display: none;">
+        <div class="thank-you-container">
+            <h1>Thank You!</h1>
+            <p>Your message has been received. We'll get back to you as soon as possible.</p>
+            <button class="back-button" onclick="hideThankYou()">Back to Homepage</button>
+        </div>
+    </section>
+
+    <script>
+        const modal = document.getElementById('mapModal');
+        const closeBtn = document.getElementsByClassName('close-btn')[0];
+        let map;
+
+        function openMap() {
+            modal.style.display = "block";
+            
+            if (!map) {
+                // Coordinates for Av. San Martin & Dr. Alejandro Ramirez, Santa Cruz, Bolivia
+                const storeLocation = [-17.761408, -63.196803]; // Santa Cruz coordinates
+                
+                map = L.map('map').setView(storeLocation, 16); // Increased zoom level to 16 for better street view
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Add marker with popup
+                L.marker(storeLocation)
+                    .addTo(map)
+                    .bindPopup(`
+                        <strong>Cactus Paradise</strong><br>
+                        Av San Martin calle Dr Alejandro Ramirez<br>
+                        Santa Cruz, Bolivia<br>
+                        <a href="https://www.openstreetmap.org/?mlat=${storeLocation[0]}&mlon=${storeLocation[1]}" 
+                           target="_blank">Get Directions</a>
+                    `).openPopup();
+            }
+            
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100);
+        }
+
+        // Close modal when clicking X
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                // Send form data to FormSubmit
+                await fetch('https://formsubmit.co/cactusparadise03@gmail.com', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Show thank you message
+                document.getElementById('thank-you').style.display = 'flex';
+                
+                // Clear form
+                form.reset();
+            } catch (error) {
+                alert('There was an error sending your message. Please try again.');
+            }
+        }
+
+        function hideThankYou() {
+            document.getElementById('thank-you').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
