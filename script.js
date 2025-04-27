@@ -127,30 +127,8 @@ function validateCardNumber(cardNumber) {
     // Remove spaces and non-numeric characters
     const cleaned = cardNumber.replace(/\D/g, '');
     
-    // Check if it's a valid length (13-19 digits)
-    if (cleaned.length < 13 || cleaned.length > 19) {
-        return false;
-    }
-    
-    // Luhn algorithm for card number validation
-    let sum = 0;
-    let isEven = false;
-    
-    for (let i = cleaned.length - 1; i >= 0; i--) {
-        let digit = parseInt(cleaned.charAt(i));
-        
-        if (isEven) {
-            digit *= 2;
-            if (digit > 9) {
-                digit -= 9;
-            }
-        }
-        
-        sum += digit;
-        isEven = !isEven;
-    }
-    
-    return sum % 10 === 0;
+    // Check if it's a valid length (15-16 digits)
+    return cleaned.length >= 15 && cleaned.length <= 16;
 }
 
 function validateExpiryDate(expiryDate) {
@@ -184,9 +162,31 @@ function validateCVV(cvv) {
     return /^[0-9]{3,4}$/.test(cvv);
 }
 
+// Function to show error message
+function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    const errorElement = document.getElementById(inputId + 'Error');
+    input.classList.add('error');
+    errorElement.textContent = message;
+}
+
+// Function to clear error message
+function clearError(inputId) {
+    const input = document.getElementById(inputId);
+    const errorElement = document.getElementById(inputId + 'Error');
+    input.classList.remove('error');
+    errorElement.textContent = '';
+}
+
 // Update the payment form submission handler
 paymentForm.addEventListener('submit', function(event) {
     event.preventDefault();
+    
+    // Clear all previous errors
+    clearError('cardNumber');
+    clearError('cardName');
+    clearError('expiryDate');
+    clearError('cvv');
     
     // Get form values
     const cardNumber = document.getElementById('cardNumber').value;
@@ -196,24 +196,28 @@ paymentForm.addEventListener('submit', function(event) {
     
     // Validate all fields
     let isValid = true;
-    let errorMessage = '';
     
     if (!cardName.trim()) {
+        showError('cardName', 'Please enter the cardholder name');
         isValid = false;
-        errorMessage = 'Please enter the cardholder name';
-    } else if (!validateCardNumber(cardNumber)) {
+    }
+    
+    if (!validateCardNumber(cardNumber)) {
+        showError('cardNumber', 'Please enter a valid 15-16 digit card number');
         isValid = false;
-        errorMessage = 'Please enter a valid credit card number';
-    } else if (!validateExpiryDate(expiryDate)) {
+    }
+    
+    if (!validateExpiryDate(expiryDate)) {
+        showError('expiryDate', 'Please enter a valid expiration date (MM/YY)');
         isValid = false;
-        errorMessage = 'Please enter a valid expiration date (MM/YY)';
-    } else if (!validateCVV(cvv)) {
+    }
+    
+    if (!validateCVV(cvv)) {
+        showError('cvv', 'Please enter a valid CVV (3 or 4 digits)');
         isValid = false;
-        errorMessage = 'Please enter a valid CVV (3 or 4 digits)';
     }
     
     if (!isValid) {
-        alert(errorMessage);
         return;
     }
     
@@ -221,6 +225,13 @@ paymentForm.addEventListener('submit', function(event) {
     paymentModal.style.display = 'none';
     paymentForm.reset();
     showSuccessModal();
+});
+
+// Add input event listeners to clear errors when user starts typing
+document.querySelectorAll('.payment-form input').forEach(input => {
+    input.addEventListener('input', function() {
+        clearError(this.id);
+    });
 });
 
 // Add input formatting for card number
