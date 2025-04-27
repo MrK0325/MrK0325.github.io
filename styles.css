@@ -587,6 +587,10 @@ html {
     max-width: 400px;
     text-align: center;
     padding: 2.5rem;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 auto;
 }
 
 .success-icon {
@@ -648,4 +652,16 @@ html {
     font-size: 0.9rem;
     font-weight: normal;
     margin-left: 0.3rem;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+    display: block;
+    min-height: 1.2rem;
+}
+
+.payment-form input.error {
+    border-color: #e74c3c;
 }
