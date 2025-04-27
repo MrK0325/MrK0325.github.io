@@ -151,5 +151,49 @@
             <button class="back-button" onclick="hideThankYou()">Back to Homepage</button>
         </div>
     </section>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content payment-modal">
+            <span class="close-btn">&times;</span>
+            <h2 id="cactusTitle">Cactus Name</h2>
+            <p id="cactusDescription">Cactus description</p>
+            <p class="price">Price: $<span id="cactusPrice">0.00</span></p>
+            <form id="paymentForm" class="payment-form">
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardName">Cardholder Name</label>
+                    <input type="text" id="cardName" placeholder="John Doe" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date <span class="hint">(MM/YY)</span></label>
+                        <input type="text" id="expiryDate" placeholder="MM/YY" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123" required>
+                    </div>
+                </div>
+                <button type="submit" class="payment-button">Complete Purchase</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Message Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content success-modal">
+            <span class="close-btn">&times;</span>
+            <div class="success-icon">✓</div>
+            <h2>Payment Successful!</h2>
+            <p>Thank you for your purchase. Your order has been confirmed.</p>
+            <button class="success-button" onclick="closeSuccessModal()">Continue Shopping</button>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
 </body>
 </html>
